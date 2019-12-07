@@ -1,3 +1,13 @@
+////////////////////////////////////////////////////////////////////////////////
+// Averichkina Victoria
+// 184-1
+// Date:         6.12.2019
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -49,53 +59,41 @@ int main(int argc, char* argv[]) {
 	return EXIT_SUCCESS;
 }
 
-void checkSpelling(ifstream& in, Dictionary& dict) {
+void checkSpelling(ifstream& in, Dictionary& dict)
+{
+    int line_number = 0;
 
-	int line_number = 0;
-
-	while (in) 
+    while (in)
     {
+        line_number++;
+        set<string> totest;
+        string line;
+        getline(in, line);
 
-		line_number++;
-		set<string> totest;
-		string line;
-		getline(in, line);
+        stringstream ss (stringstream::in | stringstream::out);
+        ss << line;
 
-  	    stringstream ss (stringstream::in | stringstream::out);
-		ss << line;
-		
-		string word;
-		while (ss >> word) 
+        string word;
+        while (ss >> word)
         {
-		   // cout << line_number;
-           line_number += 1;
-           string line;
-           getline(in,line);
-           stringstream ss(stringstream::in | stringstream::out);
-           ss << line;
-           string word;
-           set <string> noDuplicateWords;
-           while(ss >> word)
-           {
-               word = stripPunct(word);
-               lower(word);
-               if(!dict.search(word))
-               {
-                   transposing(word, dict, noDuplicateWords);
-                   removing(word,dict,noDuplicateWords);
-                   replacing(word,dict,noDuplicateWords);
-                   inserting(word,dict,noDuplicateWords);
+            word = stripPunct(word);
+            lower(word);
+            if (!dict.search(word))
+            {
+                transposing(word, dict, totest);
+                removing(word,dict,totest);
+                replacing(word,dict,totest);
+                inserting(word,dict,totest);
 
-                   cout << "word: " << word << " line: " << line_number << "\n";
-                   cout << "Correct variants: \n";
-                   for(string vrnts : noDuplicateWords)
-                       cout << "\t" << vrnts << "\n";
-                   cout << "\n";
-                   noDuplicateWords.clear();
-               }
-           }
-		}
-	}
+                cout << "word: " << word << " line: " << line_number << "\n";
+                cout << "Correct variants: \n";
+                for (string vrnts : totest)
+                    cout << "\t" << vrnts << "\n";
+                cout << "\n";
+                totest.clear();
+            }
+        }
+    }
 }
 
 void lower(string& s) {
@@ -127,7 +125,7 @@ void transposing(string& word, Dictionary& dict, set <string>& noDuplicateWords)
     {
         string extra = word;
         swap(extra[i], extra[i+1]);
-        if(dict.search(extra))
+        if (dict.search(extra))
             noDuplicateWords.insert(extra);
     }
 }
@@ -137,7 +135,7 @@ void removing(string& word, Dictionary& dict, set <string>& noDuplicateWords)
     {
         string extra = word;
         extra.erase(i,1);
-        if(dict.search(extra))
+        if (dict.search(extra))
             noDuplicateWords.insert(extra);
     }
 }
@@ -149,7 +147,7 @@ void replacing(string& word, Dictionary& dict, set <string>& noDuplicateWords)
         {
             string extra = word;
             extra[i] = ch;
-            if(dict.search(extra))
+            if (dict.search(extra))
                 noDuplicateWords.insert(extra);
         }
     }
@@ -170,5 +168,4 @@ void inserting(string& word, Dictionary& dict, set <string>& noDuplicateWords)
         }
         i += 1;
     }
-
 }
