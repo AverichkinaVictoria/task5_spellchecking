@@ -17,11 +17,17 @@ class hash_function
 {
 public:
 
-    unsigned int operator()( const string& s )  const {
-        
-        
-        // Complete definition
-        
+    //Can't remember algorith from lectures, so i find this (hope even better)
+    //Rot13 (https://sohabr.net/habr/post/219139/) and wikipedia
+    unsigned int operator()( const string& s )  const
+    {
+        unsigned int hash = 0;
+        for (int i = 0; i < s.length(); ++i)
+        {
+            hash += s[i];
+            hash -= (hash << 13) | (hash >> 19);
+        }
+        return hash;
     }
 };
 
@@ -37,7 +43,6 @@ public:
 
 class Dictionary: public HashSet<string, hash_function, equality> {
 
-    // Complete definition
 public:
 	Dictionary(string filename);
 

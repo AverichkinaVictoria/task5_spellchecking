@@ -15,12 +15,14 @@ using namespace std;
 void lower(string& s);
 string stripPunct(const string& s);
 void checkSpelling(ifstream& in, Dictionary& dict);
-
-
+void transposing(string& word, Dictionary& dict, set <string>& noDuplicateWords);
+void removing(string& word, Dictionary& dict, set <string>& noDuplicateWords);
+void replacing(string& word, Dictionary& dict, set <string>& noDuplicateWords);
+void inserting(string& word, Dictionary& dict, set <string>& noDuplicateWords);
 
 // program arguments to run, example: main.exe ../../res/wordlist.txt ../../res/test.txt
 int main(int argc, char* argv[]) {
-	
+
 	// Output usage message if improper command line args were given.
 	if (argc != 3)
     {
@@ -53,6 +55,7 @@ void checkSpelling(ifstream& in, Dictionary& dict) {
 
 	while (in) 
     {
+
 		line_number++;
 		set<string> totest;
 		string line;
@@ -64,7 +67,33 @@ void checkSpelling(ifstream& in, Dictionary& dict) {
 		string word;
 		while (ss >> word) 
         {
-            // TODO: Complete the spell check of each word
+		   // cout << line_number;
+           line_number += 1;
+           string line;
+           getline(in,line);
+           stringstream ss(stringstream::in | stringstream::out);
+           ss << line;
+           string word;
+           set <string> noDuplicateWords;
+           while(ss >> word)
+           {
+               word = stripPunct(word);
+               lower(word);
+               if(!dict.search(word))
+               {
+                   transposing(word, dict, noDuplicateWords);
+                   removing(word,dict,noDuplicateWords);
+                   replacing(word,dict,noDuplicateWords);
+                   inserting(word,dict,noDuplicateWords);
+
+                   cout << "word: " << word << " line: " << line_number << "\n";
+                   cout << "Correct variants: \n";
+                   for(string vrnts : noDuplicateWords)
+                       cout << "\t" << vrnts << "\n";
+                   cout << "\n";
+                   noDuplicateWords.clear();
+               }
+           }
 		}
 	}
 }
@@ -90,4 +119,56 @@ string stripPunct(const string& s) {
     {
 		return s;
 	}
+}
+
+void transposing(string& word, Dictionary& dict, set <string>& noDuplicateWords)
+{
+    for (int i = 0; i < word.length()-1; ++i)
+    {
+        string extra = word;
+        swap(extra[i], extra[i+1]);
+        if(dict.search(extra))
+            noDuplicateWords.insert(extra);
+    }
+}
+void removing(string& word, Dictionary& dict, set <string>& noDuplicateWords)
+{
+    for (int i = 0; i < word.length(); ++i)
+    {
+        string extra = word;
+        extra.erase(i,1);
+        if(dict.search(extra))
+            noDuplicateWords.insert(extra);
+    }
+}
+void replacing(string& word, Dictionary& dict, set <string>& noDuplicateWords)
+{
+    for (int i = 0; i < word.length(); ++i)
+    {
+        for (char ch = 'a'; ch <= 'z' ; ++ch)
+        {
+            string extra = word;
+            extra[i] = ch;
+            if(dict.search(extra))
+                noDuplicateWords.insert(extra);
+        }
+    }
+}
+
+void inserting(string& word, Dictionary& dict, set <string>& noDuplicateWords)
+{
+    string extra = word;
+    string::const_iterator i = extra.begin();
+    while (i < extra.end())
+    {
+        for (char ch = 'a'; ch <= 'z'; ++ch)
+        {
+            i = extra.insert(i, ch);
+            if (dict.search(extra))
+                noDuplicateWords.insert(extra);
+            i = extra.erase(i);
+        }
+        i += 1;
+    }
+
 }
