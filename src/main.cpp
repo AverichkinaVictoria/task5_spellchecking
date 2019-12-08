@@ -87,7 +87,6 @@ void checkSpelling(ifstream& in, Dictionary& dict)
 
                 cout << "\n";
                 cout  << word << " (" << line_number << " line:" ;
-               // cout << "Correct variants: \n";
                 for (string vrnts : totest)
                     cout << " " << vrnts ;
                 cout << ")\n";
